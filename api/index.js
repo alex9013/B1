@@ -1,20 +1,27 @@
 // api/index.js
 import app from "../src/app.js";
 
-// Wrapper para forzar headers CORS en Vercel
+// Vercel serverless function
 export default (req, res) => {
-  // Forzar headers CORS ANTES de cualquier cosa
-  res.setHeader('Access-Control-Allow-Origin', 'https://f1-indol-theta.vercel.app');
+  // Set CORS headers
+  const origin = req.headers.origin;
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://f1-indol-theta.vercel.app'
+  ];
+  
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
   
-  // Responder inmediatamente a OPTIONS
+  // Handle preflight
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
   
-  // Pasar al handler de Express
+  // Let Express handle the request
   return app(req, res);
 };

@@ -2,4 +2,8 @@
 import "dotenv/config";
 import app from "../src/app.js";
 
-export default app; // Express como handler para Vercel
+// Vercel necesita que exportes el handler así
+export default async (req, res) => {
+  // Deja que Express maneje la request
+  return app(req, res);
+};

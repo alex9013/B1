@@ -33,7 +33,7 @@ app.use(cors({
 }));
 
 // Manejo explícito de preflight requests para Vercel
-app.options('*', cors());
+app.options('/*', cors());
 
 app.use(express.json());
 app.use(morgan("dev"));

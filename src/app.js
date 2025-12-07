@@ -18,13 +18,9 @@ const ALLOWED_ORIGINS = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Si no hay origin (requests de herramientas, server-to-server) permitir
     if (!origin) return callback(null, true);
-    // Si está en whitelist, permitir
     if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
-    // Permitir cualquier dominio .vercel.app (para previews)
     if (origin && origin.includes(".vercel.app")) return callback(null, true);
-    // Denegar otros
     callback(new Error("CORS not allowed"));
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -33,7 +29,20 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
+// >>> Colocar CORS lo más arriba posible
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // responder preflight para todas las rutas
+
+// Fallback para asegurarnos siempre de enviar headers CORS (útil en serverless)
+app.use((req, res, next) => {
+  const origin = req.headers.origin || "*";
+  res.header("Access-Control-Allow-Origin", origin);
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
 
 app.use(express.json());
 app.use(morgan("dev"));

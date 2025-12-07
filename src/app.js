@@ -32,9 +32,6 @@ app.use(cors({
   exposedHeaders: ["Content-Length", "X-Request-Id"]
 }));
 
-// Manejo explícito de preflight requests para Vercel
-app.options('/*', cors());
-
 app.use(express.json());
 app.use(morgan("dev"));
 

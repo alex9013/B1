@@ -1,21 +1,26 @@
 
-// api/index.js
-import app from "../src/app.js";
+// api/auth/register.js
+import app from "../../src/app.js";
 
-// Wrapper para forzar headers CORS en Vercel
-export default (req, res) => {
-  // Forzar headers CORS ANTES de cualquier cosa
-  res.setHeader('Access-Control-Allow-Origin', 'https://f1-indol-theta.vercel.app');
+export default async (req, res) => {
+  console.log('🔥 Register handler ejecutado:', req.method);
+  
+  // Set CORS headers
+  const origin = req.headers.origin || 'https://f1-indol-theta.vercel.app';
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
   
-  // Responder inmediatamente a OPTIONS
+  // Handle preflight
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    console.log('✅ OPTIONS respondido con CORS');
+    return res.status(200).end();
   }
   
-  // Pasar al handler de Express
+  console.log('📡 POST - Ejecutando register con Express');
+  // Set the correct path for Express routing
+  req.url = '/api/auth/register';
+  req.path = '/api/auth/register';
   return app(req, res);
 };

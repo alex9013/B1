@@ -1,6 +1,6 @@
 import Task from "../models/Task.js";
 
-const allwed = ['Pendiente', 'En progreso', 'Completada'];
+const allwed = ['Pendiente', 'En Progreso', 'Completada'];
 
 
 export async function list(req, res) {
@@ -40,16 +40,16 @@ export async function update(req, res) {
 }
 
 export async function remove(req, res) {
-    const {id} = req.params;
+  const { id } = req.params;
 
-    // Usar findOneAndUpdate para aplicar ambos filtros (_id y user)
-    const task = await Task.findOneAndUpdate(
-        {_id:id, user:req.userId}, // Filtro
-        {deleted:true}, // Actualización
-        {new:true} // Opciones
-    );
-    if(!task) return res.status(404).json({message: 'Tarea no encontrada'});
-    res.json({ok: true});
+  const task = await Task.findOneAndDelete({
+    _id: id,
+    user: req.userId
+  });
+
+  if (!task) return res.status(404).json({ message: "Tarea no encontrada" });
+
+  res.json({ ok: true });
 }
 
 //ENDPOINT PARA SINCRONIZACION OFFLINE: CREAR/ ACTUALIZAR POR CLIENTE Y DEVOLVER EL MAPEO
